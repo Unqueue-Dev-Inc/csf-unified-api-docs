@@ -3,6 +3,11 @@ info:
   version: '1.0.0'
   title: 'Unqueue CSF Delivery API'
   description: 'API documentation for Unqueue X CSF API'
+servers:
+  - url: https://api-orjbtud76q-uc.a.run.app/v1
+    description: Main (production) server
+  - url: https://api-ctzzdgmeyq-uc.a.run.app/v1
+    description: Internal staging server for testing
 
 paths:
   /orders/onboard:
