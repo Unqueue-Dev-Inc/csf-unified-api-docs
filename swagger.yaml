@@ -331,7 +331,269 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  
+  /orders/reorder:
+    post:
+      summary: Handles reordering the list of driver’s orders
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - deviceId
+              properties:
+                deviceId:
+                  type: string
+                orders:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      order:
+                        type: number
+                      type:
+                        type: string
+                        enum:
+                          - connect
+                          - international
+                          - domestic
+      responses:
+        '200':
+          description: The request was made successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: There was something wrong about how the request was sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'  
+  /orders/change-payment-type:
+    post:
+      summary: Handles the action of changing the payment type for domestic orders. Only works for domestic orders!
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - type
+                - paymentType
+              properties:
+                deviceId:
+                  type: string
+                  description: ID of the driver.
+                orderId:
+                  type: string
+                  description: ID of the order to change payment type.
+                type:
+                  type: string
+                  enum:
+                    - domestic
+                    - international
+                    - connect
+                paymentType:
+                  type: string
+                  description: New payment type.
+      responses:
+        '200':
+          description: The request was made successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: There was something wrong about how the request was sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/add-notes:
+    post:
+      summary: Add notes to an order for failed delivery.
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - notes
+              properties:
+                orderId:
+                  type: string
+                  description: ID of the order to add notes.
+                deviceId:
+                  type: string
+                  description: ID of the driver.
+                notes:
+                  type: string
+                  description: Notes to be added.
+      responses:
+        '200':
+          description: The request was made successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: There was something wrong about how the request was sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/make-offline-payment:
+    post:
+      summary: Make an offline payment for a merchant. Applies to domestic orders only
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - deviceId
+                - orderId
+                - plan
+                - paymentDetails
+              properties:
+                deviceId:
+                  type: string
+                  description: ID of the driver
+                orderId:
+                  type: string
+                  description: ID of the order.
+                paymentProof:
+                  type: string
+                  description: Picture proof of payment receipt
+                paymentSignature:
+                  type: string
+                  description: The signature for the payment
+                plan:
+                  type: string
+                  enum:
+                    - somePlan
+                paymentMethod:
+                  type: string
+                  enum:
+                    - cash
+                    - linx
+                    - visa
+                    - mastercard
+      responses:
+        '200':
+          description: The request was made successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: There was something wrong about how the request was sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /orders/remove:
+    post:
+      summary: Removes a package from a driver. International orders only
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - deviceId
+              properties:
+                deviceId:
+                  type: string
+                  description: ID of the driver.
+                orderId:
+                  type: string
+                  description: ID of the order to remove.
+                date:
+                  type: string
+                customerId:
+                  type: string
+                reasonId:
+                  type: string
+                note:
+                  type: string
+                invoiceId:
+                  type: string
+      responses:
+        '200':
+          description: The request was made successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: There was something wrong about how the request was sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   securitySchemes:
     bearerAuth:
@@ -355,6 +617,9 @@ components:
         data:
           type: object
           description: The data returned, if any
+        error:
+          type: string
+          description: The error returned, if any
     ErrorResponse:
       type: object
       properties:
