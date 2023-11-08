@@ -533,11 +533,8 @@ paths:
                     - somePlan
                 paymentMethod:
                   type: string
-                  enum:
-                    - cash
-                    - linx
-                    - visa
-                    - mastercard
+                  enum: [cash, linx, visa, mastercard]
+
       responses:
         "200":
           description: The request was made successfully.
@@ -605,6 +602,102 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Something went wrong.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /orders/warehouse:
+    get:
+      tags:
+        - Orders
+      summary: Retrieve the list of orders that the driver has to pick up from the warehouse
+      description: Fetches orders from the warehouse filtered by the device and type of order. You can also retrieve orders of all type by not specifying the type parameter.
+      parameters:
+        - in: query
+          name: deviceId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [connect, domestic, international]
+          required: false
+          description: The type of the orders to filter by.
+      responses:
+        "200":
+          description: A list of orders successfully retrieved from the warehouse.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      connect:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      domestic:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      international:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /orders/pending-offload:
+    get:
+      tags:
+        - Orders
+      summary: Retrieve the list of orders that the driver has to offload to the warehouse
+      description: Fetches orders from the warehouse filtered by the type of order. You can also retrieve orders of all type by not specifying the type parameter.
+      parameters:
+        - in: query
+          name: deviceId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [connect, domestic, international]
+          required: false
+          description: The type of the orders to filter by.
+      responses:
+        "200":
+          description: A list of orders successfully retrieved from the warehouse.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      connect:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      domestic:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      international:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -745,10 +838,7 @@ components:
           type: string
         origin:
           type: string
-          enum:
-            - csf-connect
-            - domestic
-            - international
+          example: "csf-connect | domestic | international"
         originalDriverEstimatedArrivalTime:
           type: string
           format: date-time
@@ -798,9 +888,6 @@ components:
           type: integer
         type:
           type: string
-          enum:
-            - pickup
-            - delivery
-            - return
+          example: "pickup | delivery | return"
         weight:
           type: number
