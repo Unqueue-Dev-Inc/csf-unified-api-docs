@@ -315,11 +315,14 @@ paths:
                   type: string
                   description: ID of the device being used.
                 signature:
-                  type: object
+                  type: string
+                  format: binary
                 paymentProof:
-                  type: object
+                  type: string
+                  format: binary
                 paymentType:
-                  type: object
+                  type: string
+                  example: "6 | 7 | 8"
                 type:
                   type: string
                   description: Type of the order. One of connect, international, or domestic
@@ -327,6 +330,19 @@ paths:
                     - connect
                     - international
                     - domestic
+                date:
+                  type: string
+                  example: "2023-06-09"
+                creditPayment:
+                  type: string
+                  example: "0 | 1"
+                invoiceId:
+                  type: string
+                paymentAmount:
+                  type: string
+                isPartialPayment:
+                  type: string
+                  example: "0 | 1"
       responses:
         "200":
           description: The request was made successfully.
@@ -722,6 +738,8 @@ components:
         success:
           type: boolean
           description: Whether the request was successful or not
+        message:
+          type: string
         data:
           type: object
           description: The data returned, if any
